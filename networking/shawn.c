@@ -63,7 +63,7 @@
 //usage:	)
 //usage:
 //usage:#define shawn_example_usage
-//usage:       "$ nc foobar.somedomain.com 25\n"
+//usage:       "$ shawn foobar.somedomain.com 25\n"
 //usage:       "220 foobar ESMTP Exim 3.12 #1 Sat, 15 Apr 2000 00:03:02 -0600\n"
 //usage:       "help\n"
 //usage:       "214-Commands supported:\n"
@@ -83,8 +83,8 @@ static void timeout(int signum UNUSED_PARAM)
 	bb_error_msg_and_die("timed out");
 }
 
-int shawn_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
-int shawn_main(int argc, char **argv)
+int SHAWN_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
+int SHAWN_main(int argc, char **argv)
 {
 	/* sfd sits _here_ only because of "repeat" option (-l -l). */
 	int sfd = sfd; /* for gcc */
