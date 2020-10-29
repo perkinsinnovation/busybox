@@ -18,7 +18,7 @@
 //                 APPLET_ODDNAME:name    main location        suid_type     help
 //applet:IF_NETCAT(APPLET_ODDNAME(netcat, nc,  BB_DIR_USR_BIN, BB_SUID_DROP, nc))
 
-//kbuild:lib-$(CONFIG_NC) += shawn.o
+//kbuild:lib-$(CONFIG_SHAWN) += shawn.o
 //kbuild:lib-$(CONFIG_NETCAT) += shawn.o
 
 #include "libbb.h"
@@ -35,10 +35,10 @@
 //usage:#define NC_OPTIONS_STR
 //usage:#endif
 //usage:
-//usage:#define nc_trivial_usage
+//usage:#define shawn_trivial_usage
 //usage:	IF_NC_EXTRA("[-iN] [-wN] ")IF_NC_SERVER("[-l] [-p PORT] ")
 //usage:       "["IF_NC_EXTRA("-f FILE|")"IPADDR PORT]"IF_NC_EXTRA(" [-e PROG]")
-//usage:#define nc_full_usage "\n\n"
+//usage:#define shawn_full_usage "\n\n"
 //usage:       "Open a pipe to IP:PORT" IF_NC_EXTRA(" or FILE")
 //usage:	NC_OPTIONS_STR
 //usage:	IF_NC_SERVER(
