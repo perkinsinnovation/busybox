@@ -7,19 +7,51 @@
  *
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
-//config:config SHAWN 
-//config:	bool "shawn (11 kb)"
+//config:config NC
+//config:	bool "nc (11 kb)"
 //config:	default y
 //config:	help
 //config:	A simple Unix utility which reads and writes data across network
 //config:	connections.
+//config:
+//config:config NETCAT
+//config:	bool "netcat (11 kb)"
+//config:	default n
+//config:	help
+//config:	Alias to nc.
+//config:
+//config:config NC_SERVER
+//config:	bool "Netcat server options (-l)"
+//config:	default y
+//config:	depends on NC || NETCAT
+//config:	help
+//config:	Allow netcat to act as a server.
+//config:
+//config:config NC_EXTRA
+//config:	bool "Netcat extensions (-eiw and -f FILE)"
+//config:	default y
+//config:	depends on NC || NETCAT
+//config:	help
+//config:	Add -e (support for executing the rest of the command line after
+//config:	making or receiving a successful connection), -i (delay interval for
+//config:	lines sent), -w (timeout for initial connection).
+//config:
+//config:config NC_110_COMPAT
+//config:	bool "Netcat 1.10 compatibility (+2.5k)"
+//config:	default y
+//config:	depends on NC || NETCAT
+//config:	help
+//config:	This option makes nc closely follow original nc-1.10.
+//config:	The code is about 2.5k bigger. It enables
+//config:	-s ADDR, -n, -u, -v, -o FILE, -z options, but loses
+//config:	busybox-specific extensions: -f FILE.
 
-//applet:IF_SHAWN(APPLET(shawn, BB_DIR_USR_BIN, BB_SUID_DROP))
+//applet:IF_NC(APPLET(nc, BB_DIR_USR_BIN, BB_SUID_DROP))
 //                 APPLET_ODDNAME:name    main location        suid_type     help
 //applet:IF_NETCAT(APPLET_ODDNAME(netcat, nc,  BB_DIR_USR_BIN, BB_SUID_DROP, nc))
 
-//kbuild:lib-$(CONFIG_SHAWN) += shawn.o
-//kbuild:lib-$(CONFIG_NETCAT) += shawn.o
+//kbuild:lib-$(CONFIG_NC) += nc.o
+//kbuild:lib-$(CONFIG_NETCAT) += nc.o
 
 #include "libbb.h"
 #include "common_bufsiz.h"
@@ -35,10 +67,10 @@
 //usage:#define NC_OPTIONS_STR
 //usage:#endif
 //usage:
-//usage:#define shawn_trivial_usage
+//usage:#define nc_trivial_usage
 //usage:	IF_NC_EXTRA("[-iN] [-wN] ")IF_NC_SERVER("[-l] [-p PORT] ")
 //usage:       "["IF_NC_EXTRA("-f FILE|")"IPADDR PORT]"IF_NC_EXTRA(" [-e PROG]")
-//usage:#define shawn_full_usage "\n\n"
+//usage:#define nc_full_usage "\n\n"
 //usage:       "Open a pipe to IP:PORT" IF_NC_EXTRA(" or FILE")
 //usage:	NC_OPTIONS_STR
 //usage:	IF_NC_SERVER(
@@ -55,15 +87,15 @@
 //usage:     "\n	-e PROG	Run PROG after connect"
 //usage:	)
 //usage:
-//usage:#define shawn_notes_usage ""
+//usage:#define nc_notes_usage ""
 //usage:	IF_NC_EXTRA(
 //usage:       "To use netcat as a terminal emulator on a serial port:\n\n"
 //usage:       "$ stty 115200 -F /dev/ttyS0\n"
 //usage:       "$ stty raw -echo -ctlecho && nc -f /dev/ttyS0\n"
 //usage:	)
 //usage:
-//usage:#define shawn_example_usage
-//usage:       "$ shawn foobar.somedomain.com 25\n"
+//usage:#define nc_example_usage
+//usage:       "$ nc foobar.somedomain.com 25\n"
 //usage:       "220 foobar ESMTP Exim 3.12 #1 Sat, 15 Apr 2000 00:03:02 -0600\n"
 //usage:       "help\n"
 //usage:       "214-Commands supported:\n"
@@ -83,8 +115,8 @@ static void timeout(int signum UNUSED_PARAM)
 	bb_error_msg_and_die("timed out");
 }
 
-int SHAWN_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
-int SHAWN_main(int argc, char **argv)
+int nc_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
+int nc_main(int argc, char **argv)
 {
 	/* sfd sits _here_ only because of "repeat" option (-l -l). */
 	int sfd = sfd; /* for gcc */
